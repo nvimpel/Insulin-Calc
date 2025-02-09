@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cfloat>
 #include <iomanip>
+#include "converter.h"
 using namespace std;
 
 int ID = 0;
@@ -90,7 +91,21 @@ sOutput proccesDay(vector<sElement> &days)
 }
 
 void toCSV(vector<sOutput> &output){
-    ofstream file("test1.csv");
+    // Get current date and time
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    stringstream ss;
+    ss << 1900 + ltm->tm_year << "-"
+       << 1 + ltm->tm_mon << "-"
+       << ltm->tm_mday << "_"
+       << ltm->tm_hour << "-"
+       << ltm->tm_min << "-"
+       << ltm->tm_sec;
+    string currentDateTime = ss.str();
+
+    // Create file name with current date and time
+    string fileName = "output_" + currentDateTime + ".csv";
+    ofstream file(fileName);
     string result = "ID,Day,SugM,SugL,SugE,SugN,InsM,InsL,InsE,InsN\n"; // Initial header
 
     ostringstream oss; // Use ostringstream for formatting numbers
@@ -171,9 +186,7 @@ void manager(ifstream &data)
 
 void loadFile()
 {
-    cout << "Name of file: ";
-    string fileName;
-    cin >> fileName;
+    string fileName = "output.csv";
     ifstream data(fileName);
     if (!data.is_open())
     {
@@ -184,7 +197,13 @@ void loadFile()
     manager(data);
 }
 
+void changeCSV()
+{
+    convertFile();
+}
+
 int main()
 {
+    changeCSV();
     loadFile();
 }
